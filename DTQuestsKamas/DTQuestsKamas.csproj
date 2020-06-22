@@ -53,6 +53,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\Constants.cs" />
+    <Compile Include="Helper\Maths.cs" />
     <Compile Include="Helper\Quest.cs" />
     <Compile Include="Helper\QuestSteps.cs" />
     <Compile Include="Program.cs" />

@@ -17,19 +17,8 @@ namespace DTQuestsKamas.Helper
         public bool IsDungeonQuest { get; set; }
         public int LevelMin { get; set; }
         public int LevelMax { get; set; }
-        public List<int> StepIds { get; set; }
+        public string[] StepIds { get; set; }
 
-        public Quest(int id, string nameid, int category, bool isrepeatble, int repeatlimit, bool isdungeonquest, int levelmin, int levelmax, List<int> stepsids)
-        {
-            Id = id;
-            NameId = nameid;
-            CategoryId = category;
-            IsRepeatable = isrepeatble;
-            RepeatLimit = repeatlimit;
-            IsDungeonQuest = isdungeonquest;
-            LevelMin = levelmin;
-            LevelMax = levelmax;
-            StepIds = stepsids;
-        }
+        public decimal Total;
     }
 }

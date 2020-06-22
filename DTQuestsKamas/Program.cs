@@ -5,6 +5,7 @@ using System.Text;
 using Newtonsoft.Json;
 using System.Runtime.Serialization;
 using System.IO;
+using Newtonsoft.Json.Linq;
 using DTQuestsKamas.Helper;
 
 namespace DTQuestsKamas
@@ -13,24 +14,30 @@ namespace DTQuestsKamas
     {
         static void Main(string[] args)
         {
-            //lire quests.json
-            //pour chaque id
-            //if id exist in questkamas.json
-            //if Constants.Playerlvl is in max min? 
-            //calcul du montant de kamas
-            //sauvegarde format lvl:questid:kamasreward 
-            //else
-            //
-            //fin pour chaque id
-            //on classe en ordre decroissant
-
-            using (StreamReader file = File.OpenText(@"Quests.json"))
+            JObject Quest = JObject.Parse(File.ReadAllText("Quests.json"));
+            JObject QuestSteps = JObject.Parse(File.ReadAllText("QuestSteps.json"));
+            foreach (var ID in Quest)
             {
-                JsonSerializer serializer = new JsonSerializer();
-                Quest movie2 = (Quest)serializer.Deserialize(file, typeof(Quest));
-                Console.WriteLine(movie2.Id);
+                var QuestsD = JsonConvert.DeserializeObject<Quest>(ID.Value.ToString());
+                if (Constants.PlayerLvl > QuestsD.LevelMin)
+                {
+                    foreach(var ID2 in QuestSteps) {   
+                        var QuestStepsD = JsonConvert.DeserializeObject<QuestSteps>(ID2.Value.ToString());
+                        if(QuestStepsD.QuestId == QuestsD.Id)//alors on a ici une steps de la quete
+                        {
+                            Console.WriteLine(QuestsD.Id + " have a Step : " + QuestStepsD.QuestId);
+                            Maths Math = new Maths();
+                            var stepkamas = Math.MathsKamas(QuestStepsD.KamasScaleWithPlayerLevel, QuestStepsD.KamasRatio, QuestStepsD.Duration, QuestStepsD.OptimalLevel);
+                            QuestsD.Total += stepkamas;
+                        }
+                    }
+                    Console.WriteLine(QuestsD.Total);
+                }
+
+
             }
-            
+
+
 
         }
     }
