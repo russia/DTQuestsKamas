@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\CharacterExp.cs" />
     <Compile Include="Helper\Constants.cs" />
     <Compile Include="Helper\Maths.cs" />
     <Compile Include="Helper\Quest.cs" />

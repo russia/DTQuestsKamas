@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace DTQuestsKamas.Helper
 {
-    public class Constants
+    public class CharacterExp
     {
-        public static double PlayerLvl = 200;
-        public static ulong TotalKamas = 0;
+        public ulong require { get; set; }
+        public ulong total { get; set; }
     }
 }
