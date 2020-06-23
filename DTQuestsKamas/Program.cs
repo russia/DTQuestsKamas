@@ -16,7 +16,7 @@ namespace DTQuestsKamas
         {
             JObject Quest = JObject.Parse(File.ReadAllText("Quests.json"));
             JObject QuestSteps = JObject.Parse(File.ReadAllText("QuestSteps.json"));
-            foreach (var ID in Quest)
+            /*foreach (var ID in Quest)
             {
                 var QuestsD = JsonConvert.DeserializeObject<Quest>(ID.Value.ToString());
                 if (Constants.PlayerLvl > QuestsD.LevelMin)
@@ -36,7 +36,10 @@ namespace DTQuestsKamas
 
 
             }
-
+            */
+            Maths MathXp = new Maths();
+            var stepxp = MathXp.StepXp(30,0.5, 0.89999998);
+            Console.WriteLine(stepxp);
 
 
         }

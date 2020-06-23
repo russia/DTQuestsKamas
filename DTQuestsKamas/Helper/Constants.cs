@@ -8,6 +8,6 @@ namespace DTQuestsKamas.Helper
 {
     public class Constants
     {
-        public static decimal PlayerLvl = 35;
+        public static double PlayerLvl = 35;
     }
 }
