@@ -12,12 +12,12 @@ namespace DTQuestsKamas.Helper
                 return Math.Floor((Convert.ToDecimal(Math.Pow(Convert.ToDouble(optimalLevel), 2)) + (20 * optimalLevel) - 20) * kamasRatio * duration);
         }
 
-        public double StepXp(double optimalLevel, double duration, double xpRatio)
+        public double StepXp(double optimalLevel, double duration, double xpRatio, double value)
         {
             var REWARD_SCALE_CAP = 1.5;
             var REWARD_REDUCED_SCALE = 0.7;
             var playerLevel = Constants.PlayerLvl;
-            var experienceFactor = 1.0010683901874948376971999669613; //TODO READ FILE JSON LVL
+            var experienceFactor = value; //TODO READ FILE JSON LVL
 
             if (playerLevel > optimalLevel)
             {

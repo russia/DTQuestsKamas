@@ -8,7 +8,7 @@ namespace DTQuestsKamas.Helper
 {
     public class Constants
     {
-        public static double PlayerLvl = 200;
+        public static double PlayerLvl;
         public static ulong TotalKamas = 0;
     }
 }

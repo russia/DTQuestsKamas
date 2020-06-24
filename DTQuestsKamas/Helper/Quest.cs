@@ -19,6 +19,7 @@ namespace DTQuestsKamas.Helper
         public int LevelMax { get; set; }
         public string[] StepIds { get; set; }
 
-        public decimal Total;
+        public decimal TotalKamas;
+        public int TotalXp = 0;
     }
 }
