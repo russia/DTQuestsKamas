@@ -58,6 +58,7 @@
     <Compile Include="Helper\Maths.cs" />
     <Compile Include="Helper\Quest.cs" />
     <Compile Include="Helper\QuestSteps.cs" />
+    <Compile Include="Helper\Templates\StepsIds.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

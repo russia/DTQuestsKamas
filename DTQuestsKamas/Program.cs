@@ -1,4 +1,5 @@
 ﻿using DTQuestsKamas.Helper;
+using DTQuestsKamas.Helper.Templates;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,56 +13,70 @@ namespace DTQuestsKamas
         private static void Main(string[] args)
         {
             Console.WriteLine("Character lvl ?");
-            Constants.PlayerLvl = int.Parse(Console.ReadLine());
-
-            JObject Quest = JObject.Parse(File.ReadAllText("Quests.json"));
+            Dictionary<double, List<JObject>> Result = new Dictionary<double, List<JObject>>();
+            JObject Quests = JObject.Parse(File.ReadAllText("Quests.json"));
             JObject QuestSteps = JObject.Parse(File.ReadAllText("QuestSteps.json"));
             JObject CharacterExp = JObject.Parse(File.ReadAllText("CharactersExp.json"));
-            List<Quest> _data = new List<Quest>();
-            foreach (var ID in Quest)
+            List<int> NeedToSkip = new List<int>();
+            
+            for (int PlayerLevel = 2; PlayerLevel <= 200; PlayerLevel++)
             {
-                var QuestsD = JsonConvert.DeserializeObject<Quest>(ID.Value.ToString());
-                if (Constants.PlayerLvl > QuestsD.LevelMin)
+                List<JObject> Listtest = new List<JObject>();
+                //   Listtest.Clear();
+                foreach (var Quest in Quests)
                 {
-                    foreach (var ID2 in QuestSteps)
+                    var QuestDetails = JsonConvert.DeserializeObject<Quest>(Quest.Value.ToString());
+                    if (!NeedToSkip.Contains(QuestDetails.Id) && (PlayerLevel >= QuestDetails.LevelMin))
                     {
-                        var QuestStepsD = JsonConvert.DeserializeObject<QuestSteps>(ID2.Value.ToString());
-                        if (QuestStepsD.QuestId == QuestsD.Id)//alors on a ici une steps de la quete
+                        foreach (var QuestStep in QuestSteps)
                         {
-                            Console.WriteLine(QuestsD.Id + " have a Step : " + QuestStepsD.QuestId);
-                            Maths Math = new Maths();
-                            var stepkamas = Math.MathsKamas(QuestStepsD.KamasScaleWithPlayerLevel, QuestStepsD.KamasRatio, QuestStepsD.Duration, QuestStepsD.OptimalLevel);
-                            Constants.TotalKamas += Convert.ToUInt64(stepkamas);
-                            Console.WriteLine("Kamas gagnés : " + stepkamas);
-                            QuestsD.TotalKamas = stepkamas;
-                            foreach (var id in CharacterExp)
+                            var QuestStepsDetails = JsonConvert.DeserializeObject<QuestSteps>(QuestStep.Value.ToString());
+                            if (QuestStepsDetails.QuestId == QuestDetails.Id)
                             {
-                                if (id.Key.ToString() == Constants.PlayerLvl.ToString())
+                                //Console.WriteLine(QuestDetails.Id + " have a Step : " + QuestStepsDetails.QuestId);
+                                Maths Math = new Maths();
+                                var stepkamas = Math.MathsKamas(QuestStepsDetails.KamasScaleWithPlayerLevel, QuestStepsDetails.KamasRatio, QuestStepsDetails.Duration, QuestStepsDetails.OptimalLevel, PlayerLevel);
+                                Constants.TotalKamas += Convert.ToUInt64(stepkamas);
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                //Console.WriteLine("Kamas gagnés : " + stepkamas);
+                                Console.ForegroundColor = ConsoleColor.White;
+                                QuestDetails.TotalKamas = stepkamas;
+                                foreach (var id in CharacterExp)
                                 {
-                                    var ExpList = JsonConvert.DeserializeObject<CharacterExp>(id.Value.ToString());
-                                    double antidivdezeroissuelmao = ExpList.require;
-                                    var value = antidivdezeroissuelmao / ExpList.total;
-                                    var stepxp = Math.StepXp(QuestStepsD.OptimalLevel, Convert.ToDouble(QuestStepsD.Duration), Convert.ToDouble(QuestStepsD.XpRatio), value) - 22;
-                                    if (stepxp > 0)
+                                    if (id.Key.ToString() == PlayerLevel.ToString())
                                     {
-                                        var requireafterstep = ExpList.require - stepxp;
-                                        Console.WriteLine("Level " + id.Key.ToString() + " require " + ExpList.require + " / " + ExpList.total + " this quest would gave " + stepxp + " that's : " + requireafterstep + "xp left..");
-                                        QuestsD.TotalXp = int.Parse(stepxp.ToString());
+                                        var ExpList = JsonConvert.DeserializeObject<CharacterExp>(id.Value.ToString());
+                                        double antidivdezeroissuelmao = ExpList.require;
+                                        var value = antidivdezeroissuelmao / ExpList.total;
+                                        var stepxp = Math.StepXp(QuestStepsDetails.OptimalLevel, Convert.ToDouble(QuestStepsDetails.Duration), Convert.ToDouble(QuestStepsDetails.XpRatio), value, PlayerLevel) - 22;
+                                        if ((stepkamas > 0 && stepxp > 0) && (PlayerLevel >= QuestDetails.LevelMin))
+                                        {
+                                            var requireafterstep = ExpList.require - stepxp;
+                                            Console.WriteLine("Level " + id.Key.ToString() + " require " + ExpList.require + " / " + ExpList.total + " this quest would gave " + stepxp + " that's : " + requireafterstep + "xp left..");
+                                            QuestDetails.TotalXp = int.Parse(stepxp.ToString());
+                                            StepsIds infos = new StepsIds(QuestStepsDetails.Id, QuestStepsDetails.NameId, QuestStepsDetails.DescriptionId, int.Parse(stepkamas.ToString()), int.Parse(stepxp.ToString()), QuestDetails.IsRepeatable, QuestDetails.IsDungeonQuest, QuestDetails.LevelMin, QuestDetails.LevelMax);
+
+                                            string jsontest = JsonConvert.SerializeObject(infos);
+                                            var test = JObject.Parse(jsontest);
+                                            Listtest.Add(test);
+                                            Console.WriteLine("Kamas gagnés : " + stepkamas);
+                                        }
                                     }
                                 }
-                            }
-                            
-                            string json = JsonConvert.SerializeObject(QuestsD);
-                            
-                            using (StreamWriter sw = File.AppendText("output.json"))
-                            {
-                                sw.WriteLine(json);
+                                NeedToSkip.Add(QuestDetails.Id);
                             }
                         }
                     }
                 }
+                Result.Add(PlayerLevel, Listtest);
             }
 
+            string json = JsonConvert.SerializeObject(Result, Formatting.Indented);
+
+            using (StreamWriter sw = File.AppendText("output.json"))
+            {
+                sw.WriteLine(json);
+            }
             Console.WriteLine("Kamas gagnés TOTAL : " + Constants.TotalKamas);
         }
     }
