@@ -17,9 +17,9 @@ namespace DTQuestsKamas.Helper
         public bool IsDungeonQuest { get; set; }
         public int LevelMin { get; set; }
         public int LevelMax { get; set; }
-        public string[] StepIds { get; set; }
+        public int[] StepIds { get; set; }
 
-        public decimal TotalKamas;
+        public long TotalKamas;
         public int TotalXp = 0;
     }
 }
