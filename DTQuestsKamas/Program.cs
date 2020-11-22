@@ -12,7 +12,9 @@ namespace DTQuestsKamas
     internal class Program
     {
         public static short PlayerLevel = 0;
-        private static void Main(string[] args)
+        public static Dictionary<string, CharacterExp> CharacterExp = JsonConvert.DeserializeObject<Dictionary<string, CharacterExp>>(File.ReadAllText("./data/CharactersExp.json"));
+
+        private static void Main()
         {
         redo: Console.WriteLine("Character lvl ?");
             PlayerLevel = short.Parse(Console.ReadLine());
@@ -25,16 +27,15 @@ namespace DTQuestsKamas
         public static void DoRewards()
         {
             List<RewardInfos> List = new List<RewardInfos>();
-            Dictionary<string, achievementRewards> Rewards = JsonConvert.DeserializeObject<Dictionary<string, achievementRewards>>(File.ReadAllText("AchievementRewards.json"));
-            Dictionary<string, achievements> Achievements = JsonConvert.DeserializeObject<Dictionary<string, achievements>>(File.ReadAllText("Achievements.json"));
-            Dictionary<string, CharacterExp> CharacterExp = JsonConvert.DeserializeObject<Dictionary<string, CharacterExp>>(File.ReadAllText("CharactersExp.json"));
+            Dictionary<string, achievementRewards> Rewards = JsonConvert.DeserializeObject<Dictionary<string, achievementRewards>>(File.ReadAllText("./data/AchievementRewards.json"));
+            Dictionary<string, achievements> Achievements = JsonConvert.DeserializeObject<Dictionary<string, achievements>>(File.ReadAllText("./data/Achievements.json"));
             var PlayerXPInfos = CharacterExp[PlayerLevel.ToString()];
             foreach (var Reward in Rewards)
             {
                 achievementRewards RewardValues = Reward.Value;
                 long KamasRewards = 0;
                 if (!Achievements.TryGetValue(RewardValues.achievementId.ToString(), out achievements CurrentAchievement))
-                    return;
+                    continue; // retard de mes couilles
                 KamasRewards += (long)Maths.RewardMathsKamas(RewardValues.kamasScaleWithPlayerLevel, RewardValues.kamasRatio, CurrentAchievement.level, PlayerLevel);
                 List.Add(new RewardInfos(CurrentAchievement.nameId, CurrentAchievement.descriptionId, CurrentAchievement.id, KamasRewards, 0, RewardValues.itemsReward, RewardValues.levelMin, RewardValues.levelMax, CurrentAchievement.rewardIds.Count()));
             }
@@ -48,10 +49,8 @@ namespace DTQuestsKamas
         public static void DoQuests()
         {
             List<QuestInfos> Final = new List<QuestInfos>();
-            Dictionary<string, Quest> Quests = JsonConvert.DeserializeObject<Dictionary<string, Quest>>(File.ReadAllText("Quests.json"));
-            Dictionary<string, QuestSteps> QuestSteps = JsonConvert.DeserializeObject<Dictionary<string, QuestSteps>>(File.ReadAllText("QuestSteps.json"));
-            Dictionary<string, CharacterExp> CharacterExp = JsonConvert.DeserializeObject<Dictionary<string, CharacterExp>>(File.ReadAllText("CharactersExp.json"));
-
+            Dictionary<string, Quest> Quests = JsonConvert.DeserializeObject<Dictionary<string, Quest>>(File.ReadAllText("./data/Quests.json"));
+            Dictionary<string, QuestSteps> QuestSteps = JsonConvert.DeserializeObject<Dictionary<string, QuestSteps>>(File.ReadAllText("./data/QuestSteps.json"));
             var PlayerXPInfos = CharacterExp[PlayerLevel.ToString()];
             foreach (var quest in Quests.Values.Where(x => x.LevelMin <= PlayerLevel))
             {

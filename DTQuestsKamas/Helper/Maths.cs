@@ -6,7 +6,7 @@ namespace DTQuestsKamas.Helper
     {
         public static decimal RewardMathsKamas(bool scale, double kamasRatio, double level, double PlayerLevel)
         {
-            var n = scale ? PlayerLevel : level;
+            double n = scale ? PlayerLevel : level;
             return Math.Floor((Convert.ToDecimal(Math.Pow(Convert.ToDouble(n), 2) + 20 * Convert.ToDouble(n) - 20)) * Convert.ToDecimal(kamasRatio));
         }
 
@@ -23,7 +23,7 @@ namespace DTQuestsKamas.Helper
             var REWARD_SCALE_CAP = 1.5;
             var REWARD_REDUCED_SCALE = 0.7;
             var playerLevel = PlayerLevel;
-            var experienceFactor = value; 
+            var experienceFactor = value;
 
             if (playerLevel > optimalLevel)
             {
