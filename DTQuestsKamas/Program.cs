@@ -50,7 +50,8 @@ namespace DTQuestsKamas
         {
             List<QuestInfos> Final = new List<QuestInfos>();
             Dictionary<string, Quest> Quests = JsonConvert.DeserializeObject<Dictionary<string, Quest>>(File.ReadAllText("./data/Quests.json"));
-            Dictionary<string, QuestSteps> QuestSteps = JsonConvert.DeserializeObject<Dictionary<string, QuestSteps>>(File.ReadAllText("./data/QuestSteps.json"));
+            var questsSteps = File.ReadAllText("./data/QuestSteps.json");
+            Dictionary<string, QuestSteps> QuestSteps = JsonConvert.DeserializeObject<Dictionary<string, QuestSteps>>(questsSteps);
             var PlayerXPInfos = CharacterExp[PlayerLevel.ToString()];
             foreach (var quest in Quests.Values.Where(x => x.LevelMin <= PlayerLevel))
             {
@@ -65,12 +66,12 @@ namespace DTQuestsKamas
 
                 foreach (var step in steps)
                 {
-                    QuestXP += Maths.QuestStepXp(step.OptimalLevel, (double)step.Duration, (double)step.XpRatio, PlayerXPInfos.require / PlayerXPInfos.total, PlayerLevel);
+                    QuestXP += Maths.QuestStepXp(step.OptimalLevel, (double)step.Duration, (double)step.XpRatio, 1, PlayerLevel);
                     QuestKamas += (long)Maths.QuestMathsKamas(step.KamasScaleWithPlayerLevel, step.KamasRatio, step.Duration, step.OptimalLevel, PlayerLevel);
                 }
                 Final.Add(new QuestInfos(quest.Id, quest.NameId, QuestKamas, (long)QuestXP, quest.IsRepeatable, quest.LevelMin, quest.LevelMax, steps.Select(x => new StepInfos(x.Id, x.NameId, x.DescriptionId)).ToList()));
             }
-            Final = Final.OrderByDescending(x => x.Kamas).ToList();
+            Final = Final.OrderByDescending(x => x.Exp).ToList();
             if (!Directory.Exists("./output"))
                 Directory.CreateDirectory("./output");
 
